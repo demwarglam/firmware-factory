@@ -47,7 +47,7 @@
 					{% endfor %}
 				</select>
 				{% else %}
-				<input type="text" size="{{ patch.value_length }}" name="{{ patch_category.name }}.{{ patch.name }}" value="{{ patch.value_default }}" />
+				<input class="fixed_width" type="text" size="{{ patch.value_length }}" name="{{ patch_category.name }}.{{ patch.name }}" value="{{ patch.value_default }}" />
 				{% endif %}
 			{% endif %}
 		</td>
@@ -59,7 +59,9 @@
 
 <h3>All set?</h3>
 
-<input type="submit" value="Gimme my firmware!" />
+<p>Disclaimer: shit happens. Make sure that you know how to revert to the default firmware before continuing!</p>
+
+<input type="submit" value="Now gimme my firmware!" />
 
 </form>
 

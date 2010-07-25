@@ -1,6 +1,6 @@
 #!/usr/bin/python2.5
 #
-# Copyright 2009 Olivier Gillet.
+# Copyright 2010 Olivier Gillet.
 #
 # Author: Olivier Gillet (ol.gillet@gmail.com)
 #
@@ -15,13 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""File containing patchable blocks of code in the Shruthi-1 firmware."""
+"""Patchable blocks of code in the Shruti-1 firmware."""
 
 import os
 
 WAVETABLE_PATH = os.path.join(os.path.split(__file__)[0], 'wavetables')
 
 wavetable_files = os.listdir(WAVETABLE_PATH)
+
 
 def FixWavetable(data):
   return ''.join(data[i:i + 128] + data[i] for i in xrange(0, 2048, 128))

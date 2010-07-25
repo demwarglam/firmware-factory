@@ -44,7 +44,7 @@ class Patcher(object):
           'is_upload': value_type == file,
           'value_list': value_range if value_type == list else [],
           'value_range': '%d-%d' % value_range if value_type == int else '',
-          'value_length': value_range * 3 if value_type == str else 6,
+          'value_length': value_range * 2 if value_type == str else 6,
           'value_default': value_default
           })
     categories_list = []
@@ -66,7 +66,7 @@ class Patcher(object):
     elif value_type == list:
       return value
     elif value_type == str:
-      value = eval('\'' + value + '\'')[:value_range]
+      value = eval('\'' + value.replace('\'', '\\\'') + '\'')[:value_range]
       padding = value_range - len(value)
       return value + ' ' * padding
     else:
@@ -110,39 +110,3 @@ class Patcher(object):
         patched_firmware[start:start + size] = map(ord, value)
     assert len(patched_firmware) == len(self._firmware)
     return patched_firmware
-
-
-if __name__ == '__main__':
-  patcher = Patcher(
-      'data.shruti1.patches',
-      'data/shruti1/firmware.hex')
-  patched = patcher.Patch({
-      'display.brightness': 29,
-      'display.pause_duration': 100,
-      'display.splash_screen_line_1': 'raccoon',
-      'display.splash_screen_line_2': 'show',
-      'display.first_page_index': 1,
-      'init.patch_name': 'testicle',
-      'init.oscillator_1_waveform': 10,
-      'init.oscillator_2_waveform': 4,
-      'init.oscillator_2_range': 24,
-      'init.oscillator_2_detune': 0,
-      'init.cutoff': 127,
-      'init.resonance': 16,
-      'init.filter_env_amount': 17,
-      'init.env1_attack': 21,
-      'init.env1_decay': 22,
-      'init.env1_sustain': 23,
-      'init.env1_release': 24,
-      'init.env2_attack': 25,
-      'init.env2_decay': 26,
-      'init.env2_sustain': 27,
-      'init.env2_release': 28,
-      'wavetable.wavetable': '456d5q4d65s4d65q4d5s6d4qs' * 32
-      })
-  
-  opts = sysex.SysExOptions(
-      64, 200, '\x00\x20\x77', '\x00\x01', '\x7e\x00', '\x7f\x00')
-      
-  data = sysex.CreateSysExMidiFile(patched, opts)
-  file('test.mid', 'w').write(data)
