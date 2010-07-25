@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Mutable instruments' firmware factory</h1>
+<h2>Step 1: Firmware selection</h2>
+
+<p>Select the device/firmware to customize:</p>
+
+<form action="/" method="get">
+	<select name="firmware">
+		{% for firmware in firmware_list %}
+			<option value="{{ firmware.name }}" {{ firmware.selected }}>
+				{{ firmware.description }}
+			</option>
+		{% endfor %}
+	</select>
+	<input type="submit" value="Ok" />
+</form>
+
+<h2>Step 2: Customization</h2>
+
+<p>Customize the <b>{{ active_firmware }}</b> firmware:</p>
+
+<form action="/" method="post" enctype="multipart/form-data">
+<input type="hidden" name="firmware" value="{{ active_firmware_name }}" />
+
+{% for patch_category in patches %}
+
+<h3>{{ patch_category.name|title }}</h3>
+
+<table>
+{% for patch in patch_category.content %}
+	<tr>
+		<td width="40%"><label>{{ patch.description }}</label></td>
+		<td width="20%">
+			<span style="color: #698;">{{ patch.value_range }}</span>
+		</td>
+		<td width="40%">
+			{% if patch.is_upload %}
+				<input type="file" name="{{ patch_category.name }}.{{ patch.name }}" />
+			{% else %}
+				{% if patch.value_list %}
+				<select name="{{ patch_category.name }}.{{ patch.name }}">
+					{% for value in patch.value_list %}
+						<option value="{{ value }}">{{ value }}</option>
+					{% endfor %}
+				</select>
+				{% else %}
+				<input type="text" size="{{ patch.value_length }}" name="{{ patch_category.name }}.{{ patch.name }}" value="{{ patch.value_default }}" />
+				{% endif %}
+			{% endif %}
+		</td>
+	</tr>
+{% endfor %}
+</table>
+
+{% endfor %}
+
+<h3>All set?</h3>
+
+<input type="submit" value="Gimme my firmware!" />
+
+</form>
+
+{% endblock %}
