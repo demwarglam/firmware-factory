@@ -21,7 +21,7 @@ import os
 
 WAVETABLE_PATH = os.path.join(os.path.split(__file__)[0], 'wavetables')
 
-wavetable_files = os.listdir(WAVETABLE_PATH)
+wavetable_files = sorted(os.listdir(WAVETABLE_PATH))
 
 
 def FixWavetable(data):
