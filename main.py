@@ -15,12 +15,14 @@
 # limitations under the License.
 
 import os
+import cStringIO
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
 
 from data import config
+from hardware.tools.hexfile import hexfile
 from hardware.tools.patcher import patcher 
 from hardware.tools.sysex import sysex
 
@@ -68,19 +70,29 @@ class MainHandler(webapp.RequestHandler):
     arguments_dict = {}
     for argument in self.request.arguments():
       value = self.request.get(argument)
-      if value and argument != 'firmware':
+      if value and argument != 'firmware' and argument != 'format':
         arguments_dict[argument] = value
     if 'wavetable.wavetable_custom' in arguments_dict:
       del arguments_dict['wavetable.wavetable']
     modified_firmware = p.Patch(arguments_dict)
-
-    sysex_options = sysex.SysExOptions(*active_firmware_data[3])
-    midifile = sysex.CreateSysExMidiFile(modified_firmware, sysex_options)
     
-    self.response.headers['Content-Type'] = 'application/x-midi'
-    self.response.headers['Content-disposition'] = 'attachment; filename=%s' % \
-        active_firmware + '_custom.mid'
-    self.response.out.write(midifile)
+    if self.request.get('format') == 'midi':
+      sysex_options = sysex.SysExOptions(*active_firmware_data[3])
+      data = sysex.CreateSysExMidiFile(modified_firmware, sysex_options)
+      mime_type = 'application/x-midi'
+      extension = 'mid'
+    else:
+      f = cStringIO.StringIO()
+      hexfile.WriteHexFile(modified_firmware, f, chunk_size=16)
+      data = f.getvalue()
+      f.close()
+      mime_type = 'application/octet-stream'
+      extension = 'hex'
+    
+    self.response.headers['Content-Type'] = mime_type
+    self.response.headers['Content-disposition'] = (
+        'attachment; filename=%s_custom.%s' % (active_firmware, extension))
+    self.response.out.write(data)
 
 
 def main():
