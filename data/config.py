@@ -22,5 +22,11 @@ firmware_list = {
      'Shruti-1 v0.59',  # Description
      'data.shruti1.patches',  # Patch locations
      'data/shruti1/shruti1.hex',  # Original .hex
+     (64, 200, '\x00\x20\x77', '\x00\x01', '\x7e\x00', '\x7f\x00')),
+
+   'shrutiwave': (
+     'Shrutiwave',  # Description
+     'data.shrutiwave.patches',  # Patch locations
+     'data/shrutiwave/shrutiwave.hex',  # Original .hex
      (64, 200, '\x00\x20\x77', '\x00\x01', '\x7e\x00', '\x7f\x00'))
 }

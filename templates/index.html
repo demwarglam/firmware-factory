@@ -43,7 +43,11 @@
         {% if patch.value_list %}
         <select name="{{ patch_category.name }}.{{ patch.name }}">
           {% for value in patch.value_list %}
+          {% ifequal value patch.value_default %}
+            <option value="{{ value }}" selected>{{ value }}</option>
+          {% else %}
             <option value="{{ value }}">{{ value }}</option>
+          {% endifequal %}
           {% endfor %}
         </select>
         {% else %}
@@ -57,7 +61,7 @@
 
 {% endfor %}
 
-<h3>All set?</h3>
+<h2>Step 3: All set?</h2>
 
 <p>Pick a file format:</p>
 
