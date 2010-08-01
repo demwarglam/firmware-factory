@@ -78,9 +78,20 @@ class MainHandler(webapp.RequestHandler):
     
     if self.request.get('format') == 'midi':
       sysex_options = sysex.SysExOptions(*active_firmware_data[3])
-      data = sysex.CreateSysExMidiFile(modified_firmware, sysex_options)
+      data = sysex.CreateSysExMidiFile(
+          modified_firmware,
+          sysex_options,
+          syx=False)
       mime_type = 'application/x-midi'
       extension = 'mid'
+    elif self.request.get('format') == 'syx':
+      sysex_options = sysex.SysExOptions(*active_firmware_data[3])
+      data = sysex.CreateSysExMidiFile(
+          modified_firmware,
+          sysex_options,
+          syx=True)
+      mime_type = 'application/octet-stream'
+      extension = 'syx'
     else:
       f = cStringIO.StringIO()
       hexfile.WriteHexFile(modified_firmware, f, chunk_size=16)

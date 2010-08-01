@@ -39,7 +39,7 @@ class SysExOptions(object):
     self.reset_command = reset_command
 
 
-def CreateSysExMidiFile(data, options):
+def CreateSysExMidiFile(data, options, syx):
   size = len(data)
   page_size = options.page_size
   delay = options.delay
@@ -50,22 +50,31 @@ def CreateSysExMidiFile(data, options):
   # The first SysEx block must not start at 0! Sequencers like Logic play the
   # first SysEx block everytime stop/play is pressed.
   time = 1
+  syx_data = []
   for i in xrange(0, size, page_size):
     block = ''.join(map(chr, data[i:i+page_size]))
     padding = page_size - len(block)
     block += '\x00' * padding
-    t.AddEvent(time, midifile.SysExEvent(
+    event = midifile.SysExEvent(
         options.manufacturer_id,
         options.device_id,
-        options.update_command + midifile.Nibblize(block)))
+        options.update_command + midifile.Nibblize(block))
+    t.AddEvent(time, event)
+    syx_data.append(event.raw_message)
     # ms -> s -> beats -> ticks
     time += int(delay / 1000.0 / 0.5 * 96)
-  t.AddEvent(time, midifile.SysExEvent(
+  event = midifile.SysExEvent(
       options.manufacturer_id,
       options.device_id,
-      options.reset_command))
+      options.reset_command)
+  t.AddEvent(time, event)
+  syx_data.append(event.raw_message)
+  
   f = cStringIO.StringIO()
-  m.Write(f, format=1)
+  if syx:
+    f.write(''.join(syx_data))
+  else:
+    m.Write(f, format=1)  
   data = f.getvalue()
   f.close()
   return data
